@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora de Precios de Servicios</title>
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+        overflow-x: visible;
+        overflow-y: visible;
+    }
+    #toastContainer {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 9999;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <h1 class="text-center text-primary mb-4">Calculadora de Precios de Servicios</h1>
+
+        <form id="priceCalculatorForm">
+          <!-- Datos Personales -->
+          <h2 class="h4 border-bottom pb-2 mb-4">Datos Personales</h2>
+          <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+              <label for="nombre" class="form-label">Nombre:</label>
+              <input type="text" id="nombre" name="nombre" class="form-control" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="apellido" class="form-label">Apellido:</label>
+              <input type="text" id="apellido" name="apellido" class="form-control" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="cedula" class="form-label">Cédula/Pasaporte:</label>
+              <input type="text" id="cedula" name="cedula" class="form-control" required>
+            </div>
+          </div>
+
+          <!-- Diapositivas -->
+          <h2 class="h4 border-bottom pb-2 mb-4">Diapositivas</h2>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" name="diapositivas" value="basica" data-price="15" id="basica">
+            <label class="form-check-label" for="basica">Estructura Básica (máximo 12 diapositivas) - $15</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" name="diapositivas" value="media" data-price="20" id="media">
+            <label class="form-check-label" for="media">Estructura Media (máximo 20 diapositivas) - $20</label>
+          </div>
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="radio" name="diapositivas" value="amplia" data-price="25" id="amplia">
+            <label class="form-check-label" for="amplia">Estructura Amplia (más de 20 diapositivas) - $25</label>
+          </div>
+
+          <!-- Partes de trabajo de grado -->
+          <h2 class="h4 border-bottom pb-2 mb-4">Partes del Trabajo de Grado</h2>
+
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="introduccion" name="introduccion" data-price="10">
+            <label class="form-check-label" for="introduccion">Introducción - $10</label>
+          </div>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="resumen" name="resumen" data-price="10">
+            <label class="form-check-label" for="resumen">Resumen - $10</label>
+          </div>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="indices" name="indices" data-price="10">
+            <label class="form-check-label" for="indices">Índices (contenido, tablas, figuras) - $10</label>
+          </div>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="referencias" name="referencias" data-price="10">
+            <label class="form-check-label" for="referencias">Referencias bibliográficas - $10</label>
+          </div>
+          
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="anexos" name="anexos" data-price="10">
+            <label class="form-check-label" for="anexos">Anexos - $10</label>
+          </div>          
+
+          <!-- Capitulos del trabajo de grado -->
+          <h2 class="h4 border-bottom pb-2 mb-4">Capítulos del Trabajo de Grado</h2>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="capitulo1" name="capitulo1" data-price="10">
+            <label class="form-check-label" for="capitulo1">Capítulo 1: Planteamiento del problema - $10</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="capitulo2" name="capitulo2" data-price="10">
+            <label class="form-check-label" for="capitulo2">Capítulo 2: Marco teórico - $10</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="capitulo3" name="capitulo3" data-price="10">
+            <label class="form-check-label" for="capitulo3">Capítulo 3: Metodología - $10</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="capitulo4" name="capitulo4" data-price="10">
+            <label class="form-check-label" for="capitulo4">Capítulo 4: Análisis de resultados - $10</label>
+          </div>
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="capitulo5" name="capitulo5" data-price="10">
+            <label class="form-check-label" for="capitulo5">Capítulo 5: Conclusiones y recomendaciones - $10</label>
+          </div>
+          
+
+          <!-- Documento Resumen -->
+          <h2 class="h4 border-bottom pb-2 mb-4">Documento Resumen</h2>
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="documentoResumen" name="documentoResumen" data-price="25">
+            <label class="form-check-label" for="documentoResumen">Documento resumen para la exposición - $25</label>
+          </div>
+
+          <!-- Curso Práctico -->
+          <!-- <h2 class="h4 border-bottom pb-2 mb-4">Curso Práctico</h2>
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cursoPractico" name="cursoPractico">
+                <label class="form-check-label" for="cursoPractico">Incluir Curso Práctico - $12/hora</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="horasCurso" class="form-label">Cantidad de Horas:</label>
+              <input type="number" id="horasCurso" name="horasCurso" class="form-control" min="0" value="0" disabled>
+            </div>
+          </div> -->
+
+          <!-- Correcciones -->
+          <h2 class="h4 border-bottom pb-2 mb-4">Correcciones en Diapositivas</h2>
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="correccionesDiapositivas" name="correccionesDiapositivas" data-price="20">
+            <label class="form-check-label" for="correccionesDiapositivas">Incluir Correcciones - $20</label>
+          </div>
+
+          <!-- Total -->
+          <div class="alert alert-success text-center fs-4 fw-bold" id="totalAmount">$0.00</div>
+
+          <!-- Botón PDF -->
+          <div class="text-center mt-4">
+            <button type="button" id="downloadPdfButton" class="btn btn-primary btn-lg">Descargar Presupuesto en PDF</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+ 
+  <!-- Contenedor de toasts flotantes -->
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+    <div id="toastContainer"></div>
+  </div>
+  
+  
+  <!-- Tu script JS permanece igual -->
+  <script>
+    // Importa jsPDF de la ventana global para usarlo
+    const { jsPDF } = window.jspdf;
+
+    // Función para mostrar un toast de error
+    function showToast(message, fieldId) {
+        const toastContainer = document.getElementById('toastContainer');
+
+        // Crea el contenedor del toast
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+
+        toast.innerHTML = `
+            <div class="toast-header bg-danger text-white">
+            <strong class="me-auto">Campo obligatorio</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+            <div class="toast-body">
+            ${message}
+            </div>
+        `;
+
+        toastContainer.appendChild(toast);
+
+        // Inicializa el toast con Bootstrap JS
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        // Resalta el campo
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.classList.add('is-invalid');
+            field.focus();
+        }
+
+        // Elimina el toast del DOM cuando se oculta
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+            if (field) {
+            field.classList.remove('is-invalid');
+            }
+        });
+        }
+
+    function validarCampoTexto(valor, campo) {
+    const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    return valor.length >= 2 && soloLetras.test(valor);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Obtiene referencias a los elementos del DOM
+        const form = document.getElementById('priceCalculatorForm');
+        const totalAmountSpan = document.getElementById('totalAmount');
+       // const cursoPracticoCheckbox = document.getElementById('cursoPractico');
+        const horasCursoInput = document.getElementById('horasCurso');
+        const downloadPdfButton = document.getElementById('downloadPdfButton');
+
+        /**
+         * Calcula el total de los servicios seleccionados y devuelve una lista de los servicios detallados.
+         * @returns {Array<Object>} Lista de objetos con el nombre, precio unitario y cantidad de cada servicio seleccionado.
+         */
+        const calculateTotal = () => {
+            let total = 0;
+            const selectedServices = []; // Almacena los detalles de los servicios seleccionados
+
+            // 1. Cálculo del costo de Diapositivas
+            const diapositivasRadios = form.querySelectorAll('input[name="diapositivas"]:checked');
+            if (diapositivasRadios.length > 0) {
+                const price = parseFloat(diapositivasRadios[0].dataset.price);
+                total += price;
+                selectedServices.push({
+                    name: `Diapositivas: ${diapositivasRadios[0].nextElementSibling.textContent.split('-')[0].trim()}`,
+                    price: price,
+                    qty: 1
+                });
+            }
+
+            // 2. Cálculo del costo del Documento Resumen
+            // Nota: Se asume un precio de $25 para el documento resumen, ya que no fue especificado en la solicitud original.
+            if (document.getElementById('documentoResumen').checked) {
+                const price = parseFloat(document.getElementById('documentoResumen').dataset.price);
+                total += price;
+                selectedServices.push({
+                    name: 'Documento resumen para la exposición de la investigación',
+                    price: price,
+                    qty: 1
+                });
+            }
+
+            // 3. Cálculo del costo del Curso Práctico
+            // if (cursoPracticoCheckbox.checked) {
+            //     const horas = parseInt(horasCursoInput.value, 10);
+            //     if (horas > 0) {
+            //         const pricePerHour = 12; // $12 por hora
+            //         total += (horas * pricePerHour);
+            //         selectedServices.push({
+            //             name: `Curso práctico para la presentación (${horas} horas)`,
+            //             price: pricePerHour,
+            //             qty: horas
+            //         });
+            //     }
+            // }
+
+            // 4. Cálculo del costo de Correcciones en Diapositivas Existentes
+            if (document.getElementById('correccionesDiapositivas').checked) {
+                const price = parseFloat(document.getElementById('correccionesDiapositivas').dataset.price);
+                total += price;
+                selectedServices.push({
+                    name: 'Correcciones en diapositivas existentes',
+                    price: price,
+                    qty: 1
+                });
+            }
+
+              // Capítulos del trabajo de grado
+  const capitulos = [
+    { id: 'capitulo1', label: 'Capítulo 1: Planteamiento del problema' },
+    { id: 'capitulo2', label: 'Capítulo 2: Marco teórico' },
+    { id: 'capitulo3', label: 'Capítulo 3: Metodología' },
+    { id: 'capitulo4', label: 'Capítulo 4: Análisis de resultados' },
+    { id: 'capitulo5', label: 'Capítulo 5: Conclusiones y recomendaciones' }
+  ];
+  capitulos.forEach(({ id, label }) => {
+    const checkbox = document.getElementById(id);
+    if (checkbox?.checked) {
+      const price = parseFloat(checkbox.dataset.price);
+      total += price;
+      selectedServices.push({
+        name: label,
+        price: price,
+        qty: 1
+      });
+    }
+  });
+
+    // Partes adicionales del trabajo
+    const partes = [
+    { id: 'introduccion', label: 'Introducción' },
+    { id: 'resumen', label: 'Resumen' },
+    { id: 'indices', label: 'Índices (contenido, tablas, figuras)' },
+    { id: 'referencias', label: 'Referencias bibliográficas' },
+    { id: 'anexos', label: 'Anexos' }
+  ];
+  partes.forEach(({ id, label }) => {
+    const checkbox = document.getElementById(id);
+    if (checkbox?.checked) {
+      const price = parseFloat(checkbox.dataset.price);
+      total += price;
+      selectedServices.push({
+        name: label,
+        price: price,
+        qty: 1
+      });
+    }
+  });
+
+
+            // Actualiza el monto total en la interfaz de usuario
+            totalAmountSpan.textContent = `$${total.toFixed(2)}`;
+            return selectedServices; // Devuelve la lista de servicios para el PDF
+        };
+
+        // --- Control de Eventos para el Cálculo ---
+        // Recalcula el total cada vez que hay un cambio en el formulario (radio, checkbox)
+        form.addEventListener('change', calculateTotal);
+        // Recalcula el total cada vez que se cambia un valor en un campo de entrada (ej. horas)
+        form.addEventListener('input', calculateTotal);
+
+        // Habilita o deshabilita el campo de horas del curso según si el checkbox está marcado
+        // cursoPracticoCheckbox.addEventListener('change', () => {
+        //     horasCursoInput.disabled = !cursoPracticoCheckbox.checked;
+        //     if (!cursoPracticoCheckbox.checked) {
+        //         horasCursoInput.value = 0; // Reinicia las horas a 0 si se desmarca
+        //     }
+        //     calculateTotal(); // Recalcula después de cambiar el estado del checkbox
+        // });
+
+        // Realiza un cálculo inicial al cargar la página
+        calculateTotal();
+
+        // --- Lógica de Generación de PDF ---
+        downloadPdfButton.addEventListener('click', () => {
+            // Obtiene los datos personales del usuario
+            const nombre = document.getElementById('nombre').value.trim();
+            const apellido = document.getElementById('apellido').value.trim();
+            const cedula = document.getElementById('cedula').value.trim();
+
+            // Verifica que los campos personales no estén vacíos antes de generar el PDF
+            // if (!nombre || !apellido || !cedula) {
+            //     // Muestra un mensaje al usuario si faltan datos
+            //     const messageBox = document.createElement('div');
+            //     messageBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            //     messageBox.innerHTML = `
+            //         <div class="bg-white p-8 rounded-lg shadow-xl text-center max-w-sm w-full">
+            //             <p class="text-xl font-semibold text-red-600 mb-4">Información Faltante</p>
+            //             <p class="text-gray-700 mb-6">Por favor, rellene todos los campos de datos personales (Nombre, Apellido, Cédula/Pasaporte) antes de descargar el presupuesto.</p>
+            //             <button id="closeMessageBox" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">Entendido</button>
+            //         </div>
+            //     `;
+            //     document.body.appendChild(messageBox);
+
+            //     // Cierra el mensaje al hacer clic en el botón
+            //     document.getElementById('closeMessageBox').addEventListener('click', () => {
+            //         document.body.removeChild(messageBox);
+            //     });
+            //     return; // Detiene la ejecución si los campos están vacíos
+            // }
+        
+            if (!validarCampoTexto(nombre)) {
+  showToast('El nombre debe tener al menos 2 letras y solo contener texto.', 'nombre');
+  return;
+}
+if (!validarCampoTexto(apellido)) {
+  showToast('El apellido debe tener al menos 2 letras y solo contener texto.', 'apellido');
+  return;
+}
+if (!cedula || cedula.length < 5) {
+  showToast('Ingrese una cédula o pasaporte válida (mínimo 5 caracteres).', 'cedula');
+  return;
+}
+
+
+
+            // Crea una nueva instancia de jsPDF
+            const doc = new jsPDF();
+            let y = 20; // Posición inicial en Y para el texto
+
+            // Título del documento PDF
+            doc.setFontSize(22);
+            doc.setTextColor(59, 130, 246); // Color azul similar a Tailwind blue-600
+            doc.text('Presupuesto de Servicios', 105, y, { align: 'center' });
+            y += 15;
+
+            // Información del Usuario
+            doc.setFontSize(12);
+            doc.setTextColor(74, 85, 104); // Color gris similar a Tailwind gray-700
+            doc.text(`Nombre: ${nombre} ${apellido}`, 20, y);
+            y += 7;
+            doc.text(`Cédula/Pasaporte: ${cedula}`, 20, y);
+            y += 15;
+
+            // Sección de Detalle de Servicios
+            doc.setFontSize(16);
+            doc.setTextColor(45, 55, 72); // Color gris oscuro similar a Tailwind gray-800
+            doc.text('Detalle de Servicios Solicitados:', 20, y);
+            y += 10;
+
+            const selectedServices = calculateTotal(); // Obtiene los servicios con sus detalles para el PDF
+            doc.setFontSize(12);
+            doc.setTextColor(74, 85, 104);
+
+            let totalCost = 0;
+            if (selectedServices.length === 0) {
+                doc.text('No se ha seleccionado ningún servicio.', 20, y);
+                y += 10;
+            } else {
+                selectedServices.forEach(service => {
+                    const line = `${service.name}: $${(service.price * service.qty).toFixed(2)}`;
+                    doc.text(line, 25, y);
+                    totalCost += (service.price * service.qty);
+                    y += 7;
+                });
+            }
+            y += 10;
+
+            // Monto Total Final
+            doc.setFontSize(18);
+            doc.setTextColor(6, 95, 70); // Color verde similar a Tailwind emerald-700
+            doc.text(`Monto Total del Servicio: $${totalCost.toFixed(2)}`, 20, y);
+            y += 20;
+
+            // Nota/Disclaimer
+            doc.setFontSize(10);
+            doc.setTextColor(113, 128, 150); // Color gris similar a Tailwind gray-500
+            doc.text('Este presupuesto es válido por 30 días a partir de la fecha de emisión.', 20, y);
+
+            // Guarda el documento PDF con un nombre de archivo específico
+            doc.save(`Presupuesto_${nombre}_${apellido}.pdf`);
+        });
+    });
+</script>
+
+</body>
+</html>
