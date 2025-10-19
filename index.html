@@ -168,7 +168,16 @@
   <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
     <div id="toastContainer"></div>
   </div>
-  
+
+    <!-- Toast centrado con animación -->
+  <div id="centerToast" class="position-fixed top-50 start-50 translate-middle z-3" style="display: none;">
+    <div class="toast show align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex flex-column align-items-center p-3">
+        <img src="https://i.gifer.com/YCZH.gif" alt="Descargando..." style="width: 80px; height: 80px;">
+        <strong class="mt-3">Generando presupuesto en PDF...</strong>
+      </div>
+    </div>
+  </div>
   
   <!-- Tu script JS permanece igual -->
   <script>
@@ -217,12 +226,27 @@
             }
         });
         }
-
+    
+      // Función para validar campos de texto (nombre y apellido)
     function validarCampoTexto(valor, campo) {
-    const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-    return valor.length >= 2 && soloLetras.test(valor);
+      const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+      return valor.length >= 2 && soloLetras.test(valor);
     }
 
+      // Función para enviar el presupuesto por WhatsApp
+    function enviarWhatsapp(nombre, apellido, cedula, servicios, total) {
+      const numero = '+584166809793';
+      let mensaje = `Hola, soy ${nombre} ${apellido} (Cédula/Pasaporte: ${cedula}).\n\nSolicité el siguiente presupuesto:\n`;
+
+      servicios.forEach(s => {
+        mensaje += `- ${s.name}: $${(s.price * s.qty).toFixed(2)}\n`;
+      });
+
+      mensaje += `\nMonto Total: $${total.toFixed(2)}\n\nGracias.`;
+      const url = `https://wa.me/58${numero.replace(/^0/, '')}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    }
+    
     document.addEventListener('DOMContentLoaded', () => {
         // Obtiene referencias a los elementos del DOM
         const form = document.getElementById('priceCalculatorForm');
@@ -383,19 +407,19 @@
             // }
         
             if (!validarCampoTexto(nombre)) {
-  showToast('El nombre debe tener al menos 2 letras y solo contener texto.', 'nombre');
-  return;
-}
-if (!validarCampoTexto(apellido)) {
-  showToast('El apellido debe tener al menos 2 letras y solo contener texto.', 'apellido');
-  return;
-}
-if (!cedula || cedula.length < 5) {
-  showToast('Ingrese una cédula o pasaporte válida (mínimo 5 caracteres).', 'cedula');
-  return;
-}
+              showToast('El nombre debe tener al menos 2 letras y solo contener texto.', 'nombre');
+              return;
+            }
+            if (!validarCampoTexto(apellido)) {
+              showToast('El apellido debe tener al menos 2 letras y solo contener texto.', 'apellido');
+              return;
+            }
+            if (!cedula || cedula.length < 5) {
+              showToast('Ingrese una cédula o pasaporte válida (mínimo 5 caracteres).', 'cedula');
+              return;
+            }
 
-
+            document.getElementById('centerToast').style.display = 'block';
 
             // Crea una nueva instancia de jsPDF
             const doc = new jsPDF();
@@ -452,6 +476,13 @@ if (!cedula || cedula.length < 5) {
 
             // Guarda el documento PDF con un nombre de archivo específico
             doc.save(`Presupuesto_${nombre}_${apellido}.pdf`);
+
+            // Cerrar el toast notification y enviar el whatsapp
+           setTimeout(() => {
+              document.getElementById('centerToast').style.display = 'none';
+              enviarWhatsapp(nombre, apellido, cedula, selectedServices, totalCost);
+            }, 1000);
+          
         });
     });
 </script>
