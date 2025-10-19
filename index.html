@@ -243,7 +243,7 @@
       });
 
       mensaje += `\nMonto Total: $${total.toFixed(2)}\n\nGracias.`;
-      const url = `https://api.whatsapp.com/send?phone=${numero.replace(/^0/, '')}?text=${encodeURIComponent(mensaje)}`;
+      const url = `https://api.whatsapp.com/send?phone=58${numero.replace(/^0/, '')}&text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
     }
     
