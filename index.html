@@ -145,10 +145,10 @@
           </div> -->
 
           <!-- Correcciones -->
-          <h2 class="h4 border-bottom pb-2 mb-4">Correcciones en Diapositivas</h2>
+          <h2 class="h4 border-bottom pb-2 mb-4">Correcciones</h2>
           <div class="form-check mb-4">
-            <input class="form-check-input" type="checkbox" id="correccionesDiapositivas" name="correccionesDiapositivas" data-price="20">
-            <label class="form-check-label" for="correccionesDiapositivas">Incluir Correcciones - $20</label>
+            <input class="form-check-input" type="checkbox" id="correcciones" name="correcciones" data-price="20">
+            <label class="form-check-label" for="correcciones">Incluir Correcciones - $20</label>
           </div>
 
           <!-- Total -->
@@ -278,11 +278,11 @@
             // }
 
             // 4. Cálculo del costo de Correcciones en Diapositivas Existentes
-            if (document.getElementById('correccionesDiapositivas').checked) {
-                const price = parseFloat(document.getElementById('correccionesDiapositivas').dataset.price);
+            if (document.getElementById('correcciones').checked) {
+                const price = parseFloat(document.getElementById('correcciones').dataset.price);
                 total += price;
                 selectedServices.push({
-                    name: 'Correcciones en diapositivas existentes',
+                    name: 'Correcciones',
                     price: price,
                     qty: 1
                 });
