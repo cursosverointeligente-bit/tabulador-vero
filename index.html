@@ -475,7 +475,17 @@
             doc.text('Este presupuesto es válido por 30 días a partir de la fecha de emisión.', 20, y);
 
             // Guarda el documento PDF con un nombre de archivo específico
-            doc.save(`Presupuesto_${nombre}_${apellido}.pdf`);
+            // doc.save(`Presupuesto_${nombre}_${apellido}.pdf`);
+            const pdfBlob = doc.output('blob');
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            
+            const downloadLink = document.createElement('a');
+            downloadLink.href = pdfUrl;
+            downloadLink.download = `Presupuesto_${nombre}_${apellido}.pdf`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
 
             // Cerrar el toast notification y enviar el whatsapp
            setTimeout(() => {
