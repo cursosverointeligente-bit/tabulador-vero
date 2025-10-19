@@ -235,7 +235,7 @@
 
       // Función para enviar el presupuesto por WhatsApp
     function enviarWhatsapp(nombre, apellido, cedula, servicios, total) {
-      const numero = '+584166809793';
+      const numero = '04166809793';
       let mensaje = `Hola, soy ${nombre} ${apellido} (Cédula/Pasaporte: ${cedula}).\n\nSolicité el siguiente presupuesto:\n`;
 
       servicios.forEach(s => {
@@ -243,7 +243,7 @@
       });
 
       mensaje += `\nMonto Total: $${total.toFixed(2)}\n\nGracias.`;
-      const url = `https://wa.me/58${numero.replace(/^0/, '')}?text=${encodeURIComponent(mensaje)}`;
+      const url = `https://api.whatsapp.com/send?phone=${numero.replace(/^0/, '')}?text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
     }
     
